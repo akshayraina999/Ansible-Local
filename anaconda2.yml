@@ -1,0 +1,25 @@
+---
+- hosts: servers
+  become: true
+
+  vars:
+    anaconda_python_version: 3
+    anaconda_version: 2021.11
+    anaconda_architecture: x86_64
+    anaconda_install_path: /opt/
+    anaconda_download_url: "http://repo.continuum.io/archive/Anaconda{{ anaconda_python_version }}-{{ anaconda_version }}-Linux-{{ anaconda_architecture }}.sh"
+
+
+  tasks:
+    - name: Install required packages
+      package: name={{ item }}
+      with_items:
+        - bzip2
+
+    - name: Check if anaconda is already installed
+      stat: 
+        path: "{{ anaconda_install_path }}anaconda{{ anaconda_python_version }}"
+      register: check_anaconda_install_path
+
+    - name: Download & install anaconda
+      script: /root/Ansible/install_conda.sh

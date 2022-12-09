@@ -1,0 +1,26 @@
+---
+- name: Check if conda is already installed
+  stat: 
+    path: /root/Anaconda3-2020.11-Linux-x86_64.sh
+  register: check_anaconda_install_path
+
+- name: Copying shell script to remote
+  copy:
+    src: /root/Ansible/install-conda.sh
+    dest: /root
+    mode: 0777
+
+- name: Download & Install anaconda
+  command: sh /root/Ansible/install-conda.sh
+  when: not check_anaconda_install_path.stat.exists
+
+- name: Copying Environment shell script to remote
+  copy:
+    src: /root/Ansible/create-environment.sh
+    dest: /root
+    mode: 0777
+
+- name: Creating virtual Environment
+  # uncomment below command if faced issue while creating environment
+  #become_user: root
+  command: sh /root/create-environment.sh

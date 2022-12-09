@@ -1,0 +1,41 @@
+---
+- hosts: servers
+  become: true
+
+  tasks:
+    - name:  "First Block"
+      block:
+        - name:  "creating folder"
+          file:
+            path: "{{ item }}"
+            state: directory
+          loop:
+            - /root/akshay
+            - /root/akshay2
+
+        - name:  "unarchiving one"
+          unarchive:
+            src: "https://www.free-css.com/assets/files/free-css-templates/download/page254/photogenic.zip"
+            dest: /root/akshay
+            remote_src: yes
+            list_files: yes
+          register: archive_one
+
+        
+        - debug:
+            var: archive_one.files[0].split('/')[0]
+
+        
+        - name:  "unarchiving two"
+          unarchive:
+            src: "https://www.free-css.com/assets/files/free-css-templates/download/page254/photogenic.zip"
+            dest: /root/akshay2
+            remote_src: yes
+        
+        - name:  "renaming folder"
+          command: mv /root/akshay/photogenic /root/akshay/hello
+
+        # - name:  "renaming folder"
+        #   copy: 
+        #     src: mv /root/akshay/* 
+        #     dest: /root/akshay/hello3

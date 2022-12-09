@@ -1,0 +1,12 @@
+---
+- hosts: servers
+  become: true
+  vars:
+    download_dir: ~/root
+    opencv_version: 4.0.1
+    num_processors: 2
+  roles:
+    - upgrade
+    - cuda
+    - anaconda
+    - opencv

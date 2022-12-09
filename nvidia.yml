@@ -1,0 +1,20 @@
+---
+- hosts: servers
+  become: true
+
+  tasks:
+    - name:  "Installing and checking nvidia-smi"
+      block:
+        - name:  "check if nvidia-smi exists"
+          shell: nvidia-smi
+          register: nvidia_result
+
+        - debug:
+            var: nvidia_result
+
+        - name: "Installing Cuda Drivers"
+          get_url:
+            url: http://developer.download.nvidia.com/compute/cuda/11.0.2/local_installers/cuda_11.0.2_450.51.05_linux.run
+          shell: sh cuda_11.0.2_450.51.05_linux.run
+          when: nvidia_result = 'NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver'
+         

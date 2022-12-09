@@ -1,0 +1,46 @@
+
+---
+- hosts: servers
+  become: yes
+
+  tasks:
+  - name:  "Updating System"
+    apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+  - name: "Installing cmake and other libraries"
+    apt:
+      name: ['build-essential', 'cmake', 'unzip', 'pkg-config']
+
+  - name: "Installing Image and Video I/O libraries"
+    apt:
+      name: ['libjpeg-dev', 'libpng-dev', 'libtiff-dev', 'libavcodec-dev', 'libavformat-dev', 'libswscale-dev', 'libv4l-dev', 'libxvidcore-dev', 'libx264-dev']
+
+  - name:  "Installing libjasper-dev"
+    apt:
+      name:  libjasper-dev
+    register: result
+
+  - name: "Installing libjasper from alternative method"
+    ansible.builtin.apt_repository:
+      repo: deb http://security.ubuntu.com/ubuntu xenial-security main
+    apt:
+      name:  ['libjasper1', 'libjasper-dev']
+    when: result is failed
+
+  - name:  "Installing two packages for mathematical optimization for OpenCV"
+    apt:
+      name:  ['libatlas-base-dev', 'gfortran']
+    
+  - name:  "Installing python3 development headers"
+    apt:
+      name:  python3-dev
+
+  - name:  "Download OpenCV and OpenCV-contrib"
+    file:
+      path: ['~/opencv_build']
+      state: directory
+    ansible.builtin.get_url:
+      url: https://github.com/opencv/opencv/archive/4.6.0.zip
+      dest: ~/opencv_build'
+
+

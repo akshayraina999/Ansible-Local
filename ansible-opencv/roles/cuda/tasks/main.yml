@@ -1,0 +1,21 @@
+---
+- name: Check Nvidia Driver
+  become: true
+  shell: nvidia-smi || true
+  register: nvidia_smi_output
+  failed_when: "'has failed' in nvidia_smi_output.stdout"
+
+- name: Download Nvidia Driver
+  get_url:
+    url: http://developer.download.nvidia.com/compute/cuda/11.0.2/local_installers/cuda_11.0.2_450.51.05_linux.run
+    dest: "{{ download_dir }}"
+  when: nvidia_smi_output is failed
+
+- name: Get full path of download directory
+  shell: pwd
+  args:
+    chdir: "{{ download_dir }}"
+  register: pwd_result 
+
+- name: Installing Nvidia Driver
+  shell: sh {{ pwd_result.stdout }}/cuda_11.0.2_450.51.05_linux.run

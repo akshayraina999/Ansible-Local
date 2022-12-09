@@ -1,0 +1,41 @@
+---
+- hosts: servers
+  become: true
+
+  vars:
+    anaconda_python_version: 3
+    anaconda_version: 2021.11
+    anaconda_architecture: x86_64
+    anaconda_install_path: /opt/
+    anaconda_download_url: "http://repo.continuum.io/archive/Anaconda{{ anaconda_python_version }}-{{ anaconda_version }}-Linux-{{ anaconda_architecture }}.sh"
+
+
+  tasks:
+    - name: Install required packages
+      package: name={{ item }}
+      with_items:
+        - bzip2
+
+    - name: Check if anaconda is already installed
+      stat: 
+        path: "{{ anaconda_install_path }}anaconda{{ anaconda_python_version }}"
+      register: check_anaconda_install_path
+
+    - name: Download anaconda
+      get_url:
+        url: "{{ anaconda_download_url }}"
+        dest: "/download/Anaconda{{ anaconda_python_version }}-{{ anaconda_version }}-Linux-{{ anaconda_architecture }}.sh"
+        mode: 0755
+      when: not check_anaconda_install_path.stat.exists
+
+    - name: Install anaconda
+      command: "/bin/bash /tmp/Anaconda{{ anaconda_python_version }}-{{ anaconda_version }}-Linux-{{ anaconda_architecture }}.sh -b -p {{ anaconda_install_path }}anaconda{{ anaconda_python_version }}"
+      register: anaconda_install
+      when: not check_anaconda_install_path.stat.exists
+
+    - name: Add Anaconda to the system path in /etc/profile
+      lineinfile:
+        path: /etc/profile
+        regexp: ^export PATH=.*anaconda.*
+        line: "export PATH=\"{{ anaconda_install_path }}anaconda{{ anaconda_python_version }}/bin:$PATH\""
+        backup: true

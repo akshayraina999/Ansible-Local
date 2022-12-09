@@ -1,0 +1,6 @@
+---
+download_dir: ~/downloads
+opencv_dir: ~/opencv
+opencv_contrib_dir: ~/opencv_contrib
+opencv_version: 4.6.0
+environment_name: cv1

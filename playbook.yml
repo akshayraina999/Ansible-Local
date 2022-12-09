@@ -1,0 +1,13 @@
+---
+  - name: "Playbook"
+    hosts: localhost
+
+    tasks:
+
+     - name: "test"
+       ping:
+
+     - name: "install stress"
+       homebrew:
+         name: stress
+         state: present
